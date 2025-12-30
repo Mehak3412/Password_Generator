@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Password Generator</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 40px;
+            background: #92c7bf;
+        }
+        input, button {
+            margin: 8px 0;
+            padding: 8px;
+        }
+        .password {
+            background: white;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Secure Password Generator</h1>
+
+<label>Length:</label>
+<input type="number" id="length" value="12"><br>
+
+<label>Count:</label>
+<input type="number" id="count" value="1"><br>
+
+<input type="checkbox" id="uppercase" checked> Uppercase<br>
+<input type="checkbox" id="digits" checked> Digits<br>
+<input type="checkbox" id="symbols" checked> Symbols<br>
+<input type="checkbox" id="exclude"> Exclude Similar Characters<br>
+
+<button onclick="generatePassword()">Generate</button>
+
+<div id="result"></div>
+
+<script>
+function generatePassword() {
+    const data = {
+        length: parseInt(document.getElementById("length").value),
+        count: parseInt(document.getElementById("count").value),
+        use_uppercase: document.getElementById("uppercase").checked,
+        use_digits: document.getElementById("digits").checked,
+        use_symbols: document.getElementById("symbols").checked,
+        exclude_similar: document.getElementById("exclude").checked
+    };
+
+    fetch("http://127.0.0.1:5000/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(data => {
+        const result = document.getElementById("result");
+        result.innerHTML = "";
+        data.passwords.forEach(pwd => {
+            result.innerHTML += `<div class="password">${pwd}</div>`;
+        });
+    })
+    .catch(err => alert("Backend not running!"));
+}
+</script>
+
+</body>
+</html>
